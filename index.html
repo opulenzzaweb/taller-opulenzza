@@ -359,9 +359,9 @@
 // y genera el link definitivo para usar en todos los dispositivos.
 // ======================================================
 const params = new URLSearchParams(window.location.search);
-let tallerId = params.get('taller');
-let BLOB_URL = tallerId ? ('https://jsonblob.com/api/jsonBlob/' + tallerId) : null;
-const AUTH_KEY = 'taller-auth-' + (tallerId || '');
+const tallerParam = params.get('taller');
+let BLOB_URL = tallerParam ? decodeURIComponent(tallerParam) : null;
+const AUTH_KEY = 'taller-auth-' + (tallerParam || '');
 
 let trabajos = [];
 let pinGuardado = null;
@@ -556,15 +556,14 @@ document.getElementById('pv-crear-btn').addEventListener('click', async ()=>{
 
 async function crearAlmacenamiento(pin){
   try{
-    const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+    const res = await fetch('https://api.jsonstorage.net/v1/json', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({pin: pin, trabajos: []})
     });
-    const loc = res.headers.get('Location');
-    if(!loc) throw new Error('No se pudo leer la URL de almacenamiento.');
-    const id = loc.split('/').pop();
-    const linkFinal = window.location.origin + window.location.pathname + '?taller=' + id;
+    const data = await res.json();
+    if(!data.uri) throw new Error('No se pudo crear el almacenamiento.');
+    const linkFinal = window.location.origin + window.location.pathname + '?taller=' + encodeURIComponent(data.uri);
 
     document.getElementById('pv-status').textContent = 'Listo. Este es el link de tu taller:';
     document.getElementById('pv-result').innerHTML = `
