@@ -663,7 +663,7 @@ function pedirPin(){
 
 async function iniciar(){
   document.getElementById('f-fecha').value = new Date().toISOString().slice(0,10);
-  if(!BLOB_URL){
+  if(!ghConfig){
     switchView('primeravez');
     return;
   }
