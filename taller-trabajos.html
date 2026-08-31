@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opulenzza — Trabajos del Taller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#15120d;
+    --surface:#1e1a13;
+    --surface-2:#262016;
+    --gold:#c9a227;
+    --gold-soft:#e8c667;
+    --ivory:#f3ecdd;
+    --muted:#a3937a;
+    --line:#352c1f;
+    --pendiente:#b5533c;
+    --proceso:#c9a227;
+    --listo:#6b9080;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ivory);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 28px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--surface),var(--bg));
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .brand .mark{
+    width:10px;height:10px;
+    background:var(--gold);
+    transform:rotate(45deg);
+    box-shadow:0 0 12px var(--gold);
+  }
+  .brand h1{
+    font-family:'Playfair Display',serif;
+    font-size:20px;
+    font-weight:600;
+    letter-spacing:.5px;
+    margin:0;
+    color:var(--ivory);
+  }
+  .brand small{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+  }
+  nav{display:flex;gap:6px;}
+  nav button{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--muted);
+    padding:8px 16px;
+    border-radius:999px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.15s;
+  }
+  nav button.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:#1a1509;
+  }
+  main{flex:1;padding:24px 28px 60px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---- Agregar ---- */
+  .form-wrap{max-width:480px;margin:0 auto;}
+  .form-wrap h2{
+    font-family:'Playfair Display',serif;
+    font-weight:600;
+    font-size:26px;
+    margin:0 0 4px;
+  }
+  .form-wrap p.sub{color:var(--muted);margin:0 0 28px;font-size:14px;}
+  label{
+    display:block;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--gold-soft);
+    margin:18px 0 6px;
+    font-weight:600;
+  }
+  input[type=text], select, textarea{
+    width:100%;
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--ivory);
+    padding:13px 14px;
+    border-radius:var(--radius);
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--gold);
+  }
+  textarea{resize:vertical;min-height:70px;}
+  .checkline{
+    display:flex;align-items:center;gap:10px;
+    margin-top:20px;
+  }
+  .checkline input{width:20px;height:20px;accent-color:var(--gold);}
+  .checkline label{margin:0;color:var(--ivory);text-transform:none;letter-spacing:0;font-size:14px;}
+  .submit-btn{
+    width:100%;
+    margin-top:28px;
+    padding:15px;
+    background:var(--gold);
+    color:#1a1509;
+    border:none;
+    border-radius:var(--radius);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.5px;
+    cursor:pointer;
+  }
+  .submit-btn:active{transform:scale(.99);}
+  .toast{
+    max-width:480px;margin:16px auto 0;
+    padding:12px 16px;
+    background:rgba(107,144,128,.15);
+    border:1px solid var(--listo);
+    color:var(--listo);
+    border-radius:var(--radius);
+    font-size:14px;
+    display:none;
+  }
+
+  /* ---- Gestionar ---- */
+  .manage-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+  .manage-item{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .manage-item .info{flex:1;min-width:180px;}
+  .manage-item .cliente{font-weight:700;font-size:15px;}
+  .manage-item .pieza{color:var(--muted);font-size:13px;margin-top:2px;}
+  .manage-item .meta{color:var(--muted);font-size:11px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
+  .manage-item select{width:auto;padding:8px 10px;font-size:13px;}
+  .del-btn{
+    background:transparent;border:1px solid var(--pendiente);color:var(--pendiente);
+    border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;font-weight:600;
+  }
+  .empty{color:var(--muted);text-align:center;padding:60px 0;font-size:14px;}
+  .url-box-pv{
+    background:var(--surface);border:1px solid var(--gold);border-radius:8px;
+    padding:16px;word-break:break-all;color:var(--gold-soft);font-size:15px;margin:20px 0;
+  }
+  .urgente-tag{
+    background:var(--pendiente);color:#fff;font-size:10px;font-weight:700;
+    padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px;
+  }
+
+  /* ---- Pantalla (TV) ---- */
+  #view-pantalla{padding:0;}
+  .board{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    min-height:calc(100vh - 90px);
+  }
+  .col{
+    border-right:1px solid var(--line);
+    padding:22px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+  .col:last-child{border-right:none;}
+  .col h3{
+    font-family:'Playfair Display',serif;
+    font-size:22px;
+    margin:0 0 6px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .col h3 .dot{width:12px;height:12px;border-radius:50%;}
+  .col.pendiente h3 .dot{background:var(--pendiente);}
+  .col.proceso h3 .dot{background:var(--proceso);}
+  .col.listo h3 .dot{background:var(--listo);}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:4px solid var(--gold);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .col.pendiente .card{border-left-color:var(--pendiente);}
+  .col.proceso .card{border-left-color:var(--proceso);}
+  .col.listo .card{border-left-color:var(--listo);}
+  .card .cliente{font-size:19px;font-weight:700;}
+  .card .pieza{font-size:16px;color:var(--ivory);margin-top:4px;}
+  .card .tipo{font-size:13px;color:var(--gold-soft);margin-top:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+  .card .tiempo{font-size:12px;color:var(--muted);margin-top:10px;}
+  .card .urg{margin-top:10px;}
+  .tv-header{
+    padding:18px 28px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .tv-header h1{font-family:'Playfair Display',serif;font-size:24px;margin:0;}
+  .clock{color:var(--muted);font-size:14px;}
+  @media (max-width:900px){
+    .board{grid-template-columns:1fr;}
+    .col{border-right:none;border-bottom:1px solid var(--line);}
+  }
+</style>
+</head>
+<body>
+
+<header id="topnav" style="display:none;">
+  <div class="brand">
+    <div class="mark"></div>
+    <div>
+      <h1>Opulenzza</h1>
+      <small>Trabajos del taller</small>
+    </div>
+  </div>
+  <nav>
+    <button data-view="agregar" class="active">Agregar</button>
+    <button data-view="gestionar">Gestionar</button>
+    <button data-view="pantalla">Pantalla TV</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- PRIMERA VEZ -->
+  <section id="view-primeravez" class="view">
+    <div class="form-wrap" style="text-align:center;">
+      <div id="pv-step-pin">
+        <h2>Configura tu taller</h2>
+        <p class="sub">Vamos a usar tu mismo repositorio de GitHub para guardar los datos.</p>
+        <label>Usuario/Repositorio</label>
+        <input type="text" id="pv-repo-input" placeholder="opulenzzaweb/taller-opulenzza">
+        <label>Token de acceso personal de GitHub</label>
+        <input type="password" id="pv-token-input" placeholder="ghp_...">
+        <label>PIN (4 a 6 dígitos)</label>
+        <input type="password" inputmode="numeric" id="pv-pin-input" maxlength="6" placeholder="••••" style="text-align:center;font-size:24px;letter-spacing:6px;">
+        <button class="submit-btn" id="pv-crear-btn">Crear taller</button>
+        <p class="sub" id="pv-pin-error" style="color:var(--pendiente);display:none;">Revisa el usuario/repo, el token y que el PIN tenga entre 4 y 6 números.</p>
+      </div>
+      <div id="pv-step-result" style="display:none;">
+        <h2>Listo</h2>
+        <p class="sub" id="pv-status">Este es el link de tu taller:</p>
+        <div id="pv-result"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIN (dispositivos ya configurados) -->
+  <section id="view-pin" class="view">
+    <div class="form-wrap" style="text-align:center;">
+      <h2>Taller Opulenzza</h2>
+      <p class="sub">Ingresa el PIN para continuar.</p>
+      <input type="password" inputmode="numeric" id="pin-input" maxlength="6" placeholder="••••" style="text-align:center;font-size:24px;letter-spacing:6px;">
+      <button class="submit-btn" id="pin-btn">Entrar</button>
+      <p class="sub" id="pin-error" style="color:var(--pendiente);display:none;">PIN incorrecto.</p>
+    </div>
+  </section>
+
+  <!-- AGREGAR -->
+  <section id="view-agregar" class="view">
+    <div class="form-wrap">
+      <h2>Nuevo trabajo</h2>
+      <p class="sub">Se agrega a la pizarra del taller al instante.</p>
+
+      <label>Cliente</label>
+      <input type="text" id="f-cliente" placeholder="Nombre del cliente">
+
+      <label>Pieza / Descripción</label>
+      <input type="text" id="f-pieza" placeholder="Ej. Anillo de oro 14k">
+
+      <label>Fecha de entrada</label>
+      <input type="date" id="f-fecha">
+
+      <label>Tipo de trabajo</label>
+      <select id="f-tipo">
+        <option>Ajuste de talla</option>
+        <option>Reparación</option>
+        <option>Grabado</option>
+        <option>Limpieza / Pulido</option>
+        <option>Diseño personalizado</option>
+        <option>Otro</option>
+      </select>
+
+      <label>Recibido por</label>
+      <input type="text" id="f-recibido" placeholder="Quién recibió la pieza">
+
+      <label>Notas (opcional)</label>
+      <textarea id="f-notas" placeholder="Detalles adicionales"></textarea>
+
+      <div class="checkline">
+        <input type="checkbox" id="f-urgente">
+        <label for="f-urgente">Marcar como urgente</label>
+      </div>
+
+      <button class="submit-btn" id="btn-agregar">Agregar a la pizarra</button>
+      <div class="toast" id="toast">Trabajo agregado ✓</div>
+    </div>
+  </section>
+
+  <!-- GESTIONAR -->
+  <section id="view-gestionar" class="view">
+    <div class="manage-list" id="manage-list"></div>
+  </section>
+
+  <!-- PANTALLA -->
+  <section id="view-pantalla" class="view">
+    <div class="tv-header">
+      <h1>Taller Opulenzza</h1>
+      <div class="clock" id="clock"></div>
+    </div>
+    <div class="board">
+      <div class="col pendiente">
+        <h3><span class="dot"></span>Pendiente</h3>
+        <div id="col-pendiente"></div>
+      </div>
+      <div class="col proceso">
+        <h3><span class="dot"></span>En proceso</h3>
+        <div id="col-proceso"></div>
+      </div>
+      <div class="col listo">
+        <h3><span class="dot"></span>Listo</h3>
+        <div id="col-listo"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ======================================================
+// Auto-configuración: la primera vez que se abre este link
+// (sin "?taller=" en la URL) crea el almacenamiento compartido
+// dentro de tu propio repo de GitHub y genera el link definitivo
+// para usar en todos los dispositivos.
+// ======================================================
+const params = new URLSearchParams(window.location.search);
+const tallerParam = params.get('taller');
+const AUTH_KEY = 'taller-auth-' + (tallerParam || '');
+
+let ghConfig = null; // {repo: 'usuario/repo', token: 'ghp_...'}
+if(tallerParam){
+  try{
+    ghConfig = JSON.parse(atob(decodeURIComponent(tallerParam)));
+  }catch(e){
+    ghConfig = null;
+  }
+}
+const DATA_PATH = 'data.json';
+function ghUrl(){
+  return `https://api.github.com/repos/${ghConfig.repo}/contents/${DATA_PATH}`;
+}
+function b64Encode(str){
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m,p)=>String.fromCharCode('0x'+p)));
+}
+function b64Decode(str){
+  return decodeURIComponent(atob(str).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+}
+
+let trabajos = [];
+let pinGuardado = null;
+let currentSha = null;
+
+async function loadDatos(){
+  if(!ghConfig) return;
+  try{
+    const res = await fetch(ghUrl(), {
+      headers: {
+        'Authorization': 'token ' + ghConfig.token,
+        'Accept': 'application/vnd.github+json'
+      }
+    });
+    if(res.status === 404){ trabajos = []; pinGuardado = null; currentSha = null; return; }
+    const json = await res.json();
+    currentSha = json.sha;
+    const data = JSON.parse(b64Decode(json.content.replace(/\n/g,'')));
+    trabajos = Array.isArray(data.trabajos) ? data.trabajos : [];
+    pinGuardado = data.pin || null;
+  }catch(e){
+    console.error('Error cargando', e);
+  }
+}
+// alias para el resto del código
+const loadTrabajos = loadDatos;
+
+async function saveTrabajos(){
+  if(!ghConfig) return;
+  try{
+    const body = {
+      message: 'Actualiza trabajos del taller',
+      content: b64Encode(JSON.stringify({pin: pinGuardado, trabajos})),
+      branch: 'main'
+    };
+    if(currentSha) body.sha = currentSha;
+    const res = await fetch(ghUrl(), {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + ghConfig.token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    const json = await res.json();
+    if(json.content) currentSha = json.content.sha;
+  }catch(e){
+    console.error('Error guardando', e);
+  }
+}
+
+function tiempoDesde(ts){
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if(mins < 60) return `hace ${mins} min`;
+  const horas = Math.floor(mins / 60);
+  if(horas < 24) return `hace ${horas} h`;
+  const dias = Math.floor(horas / 24);
+  return `hace ${dias} d`;
+}
+
+function formatoFecha(fechaStr){
+  if(!fechaStr) return '';
+  const [y,m,d] = fechaStr.split('-').map(Number);
+  const fecha = new Date(y, m-1, d);
+  return fecha.toLocaleDateString('es-ES', {day:'numeric', month:'short', year:'numeric'});
+}
+
+// ---- Vistas / navegación ----
+const navButtons = document.querySelectorAll('nav button');
+navButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=> switchView(btn.dataset.view));
+});
+
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  navButtons.forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  document.getElementById('topnav').style.display = (name === 'pantalla' || name === 'primeravez' || name === 'pin') ? 'none' : 'flex';
+  if(name === 'gestionar') renderGestionar();
+  if(name === 'pantalla') renderPantalla();
+}
+
+// ---- Agregar ----
+document.getElementById('btn-agregar').addEventListener('click', async ()=>{
+  const cliente = document.getElementById('f-cliente').value.trim();
+  const pieza = document.getElementById('f-pieza').value.trim();
+  if(!cliente || !pieza){
+    alert('Falta el cliente o la pieza');
+    return;
+  }
+  const nuevo = {
+    id: Date.now().toString(),
+    cliente,
+    pieza,
+    tipo: document.getElementById('f-tipo').value,
+    recibido: document.getElementById('f-recibido').value.trim(),
+    notas: document.getElementById('f-notas').value.trim(),
+    urgente: document.getElementById('f-urgente').checked,
+    estado: 'Pendiente',
+    fechaEntrada: document.getElementById('f-fecha').value || new Date().toISOString().slice(0,10),
+    creado: Date.now()
+  };
+  await loadTrabajos();
+  trabajos.push(nuevo);
+  await saveTrabajos();
+
+  ['f-cliente','f-pieza','f-recibido','f-notas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-urgente').checked = false;
+  document.getElementById('f-tipo').selectedIndex = 0;
+  document.getElementById('f-fecha').value = new Date().toISOString().slice(0,10);
+
+  const toast = document.getElementById('toast');
+  toast.style.display = 'block';
+  setTimeout(()=> toast.style.display='none', 2200);
+});
+
+// ---- Gestionar ----
+async function renderGestionar(){
+  await loadTrabajos();
+  const list = document.getElementById('manage-list');
+  list.innerHTML = '';
+  if(trabajos.length === 0){
+    list.innerHTML = '<div class="empty">No hay trabajos registrados todavía.</div>';
+    return;
+  }
+  trabajos.slice().sort((a,b)=>b.creado-a.creado).forEach(t=>{
+    const row = document.createElement('div');
+    row.className = 'manage-item';
+    row.innerHTML = `
+      <div class="info">
+        <div class="cliente">${t.cliente} ${t.urgente ? '<span class="urgente-tag">Urgente</span>' : ''}</div>
+        <div class="pieza">${t.pieza} — ${t.tipo}</div>
+        <div class="meta">Entrada: ${formatoFecha(t.fechaEntrada)} · ${tiempoDesde(t.creado)}${t.recibido ? ' · recibió ' + t.recibido : ''}</div>
+      </div>
+      <select data-id="${t.id}" class="estado-select">
+        <option ${t.estado==='Pendiente'?'selected':''}>Pendiente</option>
+        <option ${t.estado==='En Proceso'?'selected':''}>En Proceso</option>
+        <option ${t.estado==='Listo'?'selected':''}>Listo</option>
+      </select>
+      <button class="del-btn" data-id="${t.id}">Entregado / Quitar</button>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.estado-select').forEach(sel=>{
+    sel.addEventListener('change', async (e)=>{
+      const id = e.target.dataset.id;
+      const t = trabajos.find(x=>x.id===id);
+      if(t){ t.estado = e.target.value; await saveTrabajos(); }
+    });
+  });
+  list.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      const id = e.target.dataset.id;
+      trabajos = trabajos.filter(x=>x.id!==id);
+      await saveTrabajos();
+      renderGestionar();
+    });
+  });
+}
+
+// ---- Pantalla TV ----
+function cardHTML(t){
+  return `
+    <div class="card">
+      <div class="cliente">${t.cliente}</div>
+      <div class="pieza">${t.pieza}</div>
+      <div class="tipo">${t.tipo}</div>
+      <div class="tiempo">Entrada: ${formatoFecha(t.fechaEntrada)}</div>
+      ${t.urgente ? '<div class="urg urgente-tag">Urgente</div>' : ''}
+    </div>
+  `;
+}
+
+async function renderPantalla(){
+  await loadTrabajos();
+  const cols = {Pendiente:'col-pendiente', 'En Proceso':'col-proceso', Listo:'col-listo'};
+  Object.values(cols).forEach(id=> document.getElementById(id).innerHTML = '');
+  trabajos.slice().sort((a,b)=>a.creado-b.creado).forEach(t=>{
+    const colId = cols[t.estado] || cols['Pendiente'];
+    document.getElementById(colId).insertAdjacentHTML('beforeend', cardHTML(t));
+  });
+}
+
+function tickClock(){
+  const el = document.getElementById('clock');
+  if(el) el.textContent = new Date().toLocaleString('es-ES', {weekday:'long', hour:'2-digit', minute:'2-digit'});
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// refresco automático para pantalla y gestionar (multi-dispositivo)
+setInterval(()=>{
+  const activeView = document.querySelector('.view.active').id;
+  if(activeView === 'view-pantalla') renderPantalla();
+  if(activeView === 'view-gestionar') renderGestionar();
+}, 5000);
+
+// ---- Arranque ----
+document.getElementById('pv-crear-btn').addEventListener('click', async ()=>{
+  const pin = document.getElementById('pv-pin-input').value.trim();
+  const repo = document.getElementById('pv-repo-input').value.trim();
+  const token = document.getElementById('pv-token-input').value.trim();
+  if(!/^\d{4,6}$/.test(pin) || !/^[\w.-]+\/[\w.-]+$/.test(repo) || token.length < 10){
+    document.getElementById('pv-pin-error').style.display = 'block';
+    return;
+  }
+  document.getElementById('pv-pin-error').style.display = 'none';
+  document.getElementById('pv-step-pin').style.display = 'none';
+  document.getElementById('pv-step-result').style.display = 'block';
+  document.getElementById('pv-status').textContent = 'Creando el almacenamiento...';
+  await crearAlmacenamiento(pin, repo, token);
+});
+
+async function crearAlmacenamiento(pin, repo, token){
+  try{
+    ghConfig = {repo, token};
+    const body = {
+      message: 'Crea almacenamiento del taller',
+      content: b64Encode(JSON.stringify({pin: pin, trabajos: []})),
+      branch: 'main'
+    };
+    const res = await fetch(ghUrl(), {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if(!res.ok){
+      const errJson = await res.json().catch(()=>({}));
+      throw new Error(errJson.message || 'GitHub respondió con un error. Revisa el usuario/repo y el token.');
+    }
+    const configStr = btoa(JSON.stringify({repo, token}));
+    const linkFinal = window.location.origin + window.location.pathname + '?taller=' + encodeURIComponent(configStr);
+
+    document.getElementById('pv-status').textContent = 'Listo. Este es el link de tu taller:';
+    document.getElementById('pv-result').innerHTML = `
+      <div class="url-box-pv">${linkFinal}</div>
+      <button class="submit-btn" id="pv-continuar">Copiar y continuar</button>
+      <p style="color:var(--muted);font-size:13px;margin-top:14px;">
+        Usa este mismo link en el TV, el celular y la computadora — todos verán los mismos trabajos.
+        Cada dispositivo pedirá el PIN la primera vez. Guarda el link (favoritos / pantalla de inicio).
+      </p>
+    `;
+    document.getElementById('pv-continuar').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(linkFinal).catch(()=>{});
+      window.location.href = linkFinal;
+    });
+  }catch(e){
+    document.getElementById('pv-status').textContent = 'Hubo un error creando el almacenamiento: ' + e.message;
+  }
+}
+
+function pedirPin(){
+  switchView('pin');
+  const intentar = async ()=>{
+    const val = document.getElementById('pin-input').value.trim();
+    if(val === String(pinGuardado)){
+      localStorage.setItem(AUTH_KEY, 'ok');
+      document.getElementById('topnav').style.display = 'flex';
+      switchView(window.location.hash === '#pantalla' ? 'pantalla' : 'agregar');
+    }else{
+      document.getElementById('pin-error').style.display = 'block';
+      document.getElementById('pin-input').value = '';
+    }
+  };
+  document.getElementById('pin-btn').addEventListener('click', intentar);
+  document.getElementById('pin-input').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') intentar();
+  });
+}
+
+async function iniciar(){
+  document.getElementById('f-fecha').value = new Date().toISOString().slice(0,10);
+  if(!BLOB_URL){
+    switchView('primeravez');
+    return;
+  }
+  await loadDatos();
+  if(localStorage.getItem(AUTH_KEY) === 'ok'){
+    document.getElementById('topnav').style.display = 'flex';
+    switchView(window.location.hash === '#pantalla' ? 'pantalla' : 'agregar');
+  }else{
+    pedirPin();
+  }
+}
+iniciar();
+</script>
+
+</body>
+</html>
