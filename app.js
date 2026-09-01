@@ -123,17 +123,29 @@
     };
   }
 
-  function mensajeDeError(res, json) {
+  function mensajeDeError(res) {
     if (res.status === 401) return 'El token no es válido o expiró.';
     if (res.status === 404) return 'No se encontró el repositorio con ese token.';
     if (res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0') {
       return 'GitHub limitó las peticiones. Espera unos minutos.';
     }
-    return json?.message || `GitHub respondió ${res.status}.`;
+    if (res.status === 409 || res.status === 412) {
+      return 'Otro dispositivo está guardando al mismo tiempo. Vuelve a intentarlo.';
+    }
+    return `GitHub respondió ${res.status}. Vuelve a intentarlo en un momento.`;
+  }
+
+  /** Igual que `fetch`, pero convierte los fallos de red en un mensaje en español. */
+  async function ghFetch(opciones) {
+    try {
+      return await fetch(ghUrl(), opciones);
+    } catch {
+      throw new Error('No hay conexión con GitHub. Revisa la red.');
+    }
   }
 
   async function loadDatos() {
-    const res = await fetch(ghUrl(), { headers: ghHeaders(), cache: 'no-store' });
+    const res = await ghFetch({ headers: ghHeaders(), cache: 'no-store' });
     if (res.status === 404) {
       state.trabajos = [];
       state.pinHash = null;
@@ -144,7 +156,7 @@
       return;
     }
     const json = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(mensajeDeError(res, json));
+    if (!res.ok) throw new Error(mensajeDeError(res));
 
     const data = JSON.parse(b64Decode(json.content.replace(/\n/g, '')));
     state.sha = json.sha;
@@ -170,7 +182,7 @@
     };
     if (state.sha) body.sha = state.sha;
 
-    const res = await fetch(ghUrl(), {
+    const res = await ghFetch({
       method: 'PUT',
       headers: ghHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(body),
@@ -182,7 +194,7 @@
       return;
     }
     // 409/412: otro dispositivo escribió antes. Lo maneja `commit()`.
-    const err = new Error(mensajeDeError(res, json));
+    const err = new Error(mensajeDeError(res));
     err.status = res.status;
     throw err;
   }
@@ -223,7 +235,7 @@
       el.classList.toggle('visible', Boolean(mensaje));
       if (mensaje) {
         const desde = state.lastSync ? ` · últimos datos ${tiempoDesde(state.lastSync)}` : '';
-        el.textContent = `Sin conexión con GitHub: ${mensaje}${desde}`;
+        el.textContent = `${mensaje}${desde}`;
       }
     }
   }
@@ -364,7 +376,7 @@
               boton.dataset.confirmando = '';
               boton.textContent = 'Entregado / Quitar';
             }
-          }, 4000);
+          }, 10000);
           return;
         }
         const id = boton.dataset.id;
@@ -426,6 +438,8 @@
     if (document.hidden) return;
     const activa = document.querySelector('.view.active');
     if (!activa) return;
+    // No repintar mientras alguien tiene un borrado a medio confirmar.
+    if (document.querySelector('.del-btn[data-confirmando="1"]')) return;
     if (activa.id === 'view-pantalla') renderPantalla();
     if (activa.id === 'view-gestionar') renderGestionar();
   }
