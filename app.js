@@ -240,13 +240,15 @@
     }
   }
 
-  function mostrarToast(texto, esError = false) {
-    const toast = $('toast');
+  const toastTimers = {};
+
+  function mostrarToast(texto, esError = false, id = 'toast') {
+    const toast = $(id);
     toast.textContent = texto;
     toast.classList.toggle('error', esError);
     toast.classList.add('visible');
-    clearTimeout(mostrarToast.timer);
-    mostrarToast.timer = setTimeout(() => toast.classList.remove('visible'), 3500);
+    clearTimeout(toastTimers[id]);
+    toastTimers[id] = setTimeout(() => toast.classList.remove('visible'), 3500);
   }
 
   // ---------- navegación ----------
@@ -530,11 +532,7 @@
       }
 
       const val = $('pin-input').value.trim();
-      const correcto = state.pinHash
-        ? (await hashPin(val, state.pinSalt || '')) === state.pinHash
-        : state.pinLegacy !== null && val === state.pinLegacy;
-
-      if (!correcto) {
+      if (!(await pinCorrecto(val))) {
         error.textContent = 'PIN incorrecto.';
         error.classList.add('visible');
         $('pin-input').value = '';
@@ -568,6 +566,55 @@
       });
     }
   }
+
+  // ---------- cambiar PIN ----------
+
+  async function pinCorrecto(val) {
+    if (state.pinHash) return (await hashPin(val, state.pinSalt || '')) === state.pinHash;
+    return state.pinLegacy !== null && val === state.pinLegacy;
+  }
+
+  $('form-cambiar-pin').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const actual = $('cp-actual').value.trim();
+    const nuevo = $('cp-nuevo').value.trim();
+    const repetir = $('cp-repetir').value.trim();
+
+    if (!/^\d{4,6}$/.test(nuevo)) {
+      mostrarToast('El PIN nuevo debe tener entre 4 y 6 números.', true, 'cp-toast');
+      return;
+    }
+    if (nuevo !== repetir) {
+      mostrarToast('Los dos PIN nuevos no coinciden.', true, 'cp-toast');
+      return;
+    }
+
+    const boton = $('cp-btn');
+    boton.disabled = true;
+    boton.textContent = 'Guardando...';
+    try {
+      await sincronizar();
+      if (!(await pinCorrecto(actual))) {
+        mostrarToast('El PIN actual no es correcto.', true, 'cp-toast');
+        return;
+      }
+      const salt = randomSalt();
+      const hash = await hashPin(nuevo, salt);
+      await commit('Cambia el PIN del taller', (s) => {
+        s.pinSalt = salt;
+        s.pinHash = hash;
+        s.pinLegacy = null;
+      });
+      $('form-cambiar-pin').reset();
+      mostrarToast('PIN actualizado ✓', false, 'cp-toast');
+    } catch (e) {
+      setError(e.message);
+      mostrarToast('No se pudo cambiar el PIN: ' + e.message, true, 'cp-toast');
+    } finally {
+      boton.disabled = false;
+      boton.textContent = 'Guardar PIN nuevo';
+    }
+  });
 
   function entrar() {
     switchView(window.location.hash === '#pantalla' ? 'pantalla' : 'agregar');

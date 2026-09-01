@@ -32,6 +32,7 @@
         <button type="button" data-view="agregar" class="active">Agregar</button>
         <button type="button" data-view="gestionar">Gestionar</button>
         <button type="button" data-view="pantalla">Pantalla TV</button>
+        <button type="button" data-view="cambiarpin">Cambiar PIN</button>
       </nav>
     </header>
 
@@ -149,6 +150,29 @@
 
           <button class="submit-btn" type="submit" id="btn-agregar">Agregar a la pizarra</button>
           <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <!-- CAMBIAR PIN -->
+      <section id="view-cambiarpin" class="view">
+        <form class="form-wrap" id="form-cambiar-pin" novalidate>
+          <h2>Cambiar PIN</h2>
+          <p class="sub">
+            Se guarda hasheado, nunca en claro. Los dispositivos que ya entraron siguen dentro; el PIN nuevo
+            se pedirá la próxima vez que uno tenga que volver a desbloquearse.
+          </p>
+
+          <label for="cp-actual">PIN actual</label>
+          <input type="password" inputmode="numeric" id="cp-actual" maxlength="6" placeholder="••••" />
+
+          <label for="cp-nuevo">PIN nuevo (4 a 6 dígitos)</label>
+          <input type="password" inputmode="numeric" id="cp-nuevo" maxlength="6" placeholder="••••" />
+
+          <label for="cp-repetir">Repite el PIN nuevo</label>
+          <input type="password" inputmode="numeric" id="cp-repetir" maxlength="6" placeholder="••••" />
+
+          <button class="submit-btn" type="submit" id="cp-btn">Guardar PIN nuevo</button>
+          <div class="toast" id="cp-toast" role="status" aria-live="polite"></div>
         </form>
       </section>
 

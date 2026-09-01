@@ -31,7 +31,8 @@ mismo repositorio, usando la API de GitHub.
 El PIN es un candado de conveniencia contra usos accidentales del dispositivo del taller: se valida en el
 navegador, así que no es una medida de seguridad real. Se guarda hasheado (SHA-256 con sal) en
 `data.json`; los PIN antiguos guardados en texto plano se migran automáticamente en el siguiente acceso
-correcto.
+correcto. Para cambiarlo, usa la pestaña **Cambiar PIN** (pide el PIN actual). Los dispositivos que ya
+entraron siguen dentro: el PIN nuevo se pide la próxima vez que uno tenga que desbloquearse.
 
 ## Estructura
 
