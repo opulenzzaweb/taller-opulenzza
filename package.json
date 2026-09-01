@@ -1,0 +1,14 @@
+{
+  "name": "taller-opulenzza",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pizarra de trabajos del taller Opulenzza",
+  "scripts": {
+    "lint": "eslint app.js && prettier --check .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "eslint": "9.13.0",
+    "prettier": "3.3.3"
+  }
+}
