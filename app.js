@@ -87,6 +87,14 @@
   const tokenKey = (repo) => `taller-token:${repo}`;
   const authKey = (repo) => `taller-auth:${repo}`;
 
+  // En GitHub Pages (owner.github.io/repo/) el repo se deduce de la propia URL,
+  // así que el link del taller no necesita parámetros.
+  function repoDesdePages() {
+    const owner = window.location.hostname.match(/^([\w-]+)\.github\.io$/)?.[1];
+    const nombre = window.location.pathname.split('/').filter(Boolean)[0];
+    return owner && nombre ? `${owner}/${nombre}` : null;
+  }
+
   function leerConfigDeURL() {
     const params = new URLSearchParams(window.location.search);
     const repoParam = params.get('repo');
@@ -95,7 +103,7 @@
     // Formato antiguo: ?taller=<base64 de {repo, token}>. El token viajaba en el
     // link, así que se migra a localStorage y se limpia la URL.
     const tallerParam = params.get('taller');
-    if (!tallerParam) return { repo: null, legacyToken: null };
+    if (!tallerParam) return { repo: repoDesdePages(), legacyToken: null };
     try {
       const cfg = JSON.parse(b64Decode(decodeURIComponent(tallerParam)));
       return { repo: cfg.repo || null, legacyToken: cfg.token || null };
@@ -105,7 +113,9 @@
   }
 
   function linkDelTaller(repo) {
-    return `${window.location.origin}${window.location.pathname}?repo=${encodeURIComponent(repo)}`;
+    const base = `${window.location.origin}${window.location.pathname}`;
+    if (repo === repoDesdePages()) return base;
+    return `${base}?repo=${encodeURIComponent(repo)}`;
   }
 
   // ---------- acceso a GitHub ----------
@@ -632,7 +642,8 @@
     });
 
     const { repo, legacyToken } = leerConfigDeURL();
-    if (!repo) {
+    const forzarSetup = new URLSearchParams(window.location.search).has('setup');
+    if (!repo || forzarSetup) {
       switchView('primeravez');
       return;
     }
