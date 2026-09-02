@@ -26,6 +26,12 @@ mismo repositorio, usando la API de GitHub.
   guarda el token en el dispositivo y limpia la URL. Aun así, **cualquier token que haya viajado en un
   link debe considerarse comprometido y revocarse**.
 
+## El link del taller
+
+Publicada en GitHub Pages (`https://<usuario>.github.io/<repo>/`), la app deduce el repositorio de la
+propia URL, así que el link no necesita parámetros. Fuera de Pages, o para apuntar a otro repositorio,
+se usa `?repo=usuario/repo`. Para volver a la pantalla de configuración inicial, añade `?setup=1`.
+
 ## Sobre el PIN
 
 El PIN es un candado de conveniencia contra usos accidentales del dispositivo del taller: se valida en el
