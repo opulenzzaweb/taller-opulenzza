@@ -95,6 +95,15 @@
     return owner && nombre ? `${owner}/${nombre}` : null;
   }
 
+  // Fuera de github.io (dominio propio) el repo se declara en el HTML.
+  function repoDelMeta() {
+    return document.querySelector('meta[name="taller-repo"]')?.content || null;
+  }
+
+  function repoPorDefecto() {
+    return repoDesdePages() || repoDelMeta();
+  }
+
   function leerConfigDeURL() {
     const params = new URLSearchParams(window.location.search);
     const repoParam = params.get('repo');
@@ -103,7 +112,7 @@
     // Formato antiguo: ?taller=<base64 de {repo, token}>. El token viajaba en el
     // link, así que se migra a localStorage y se limpia la URL.
     const tallerParam = params.get('taller');
-    if (!tallerParam) return { repo: repoDesdePages(), legacyToken: null };
+    if (!tallerParam) return { repo: repoPorDefecto(), legacyToken: null };
     try {
       const cfg = JSON.parse(b64Decode(decodeURIComponent(tallerParam)));
       return { repo: cfg.repo || null, legacyToken: cfg.token || null };
@@ -114,7 +123,7 @@
 
   function linkDelTaller(repo) {
     const base = `${window.location.origin}${window.location.pathname}`;
-    if (repo === repoDesdePages()) return base;
+    if (repo === repoPorDefecto()) return base;
     return `${base}?repo=${encodeURIComponent(repo)}`;
   }
 
