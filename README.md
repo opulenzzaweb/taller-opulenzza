@@ -29,8 +29,10 @@ mismo repositorio, usando la API de GitHub.
 ## El link del taller
 
 Publicada en GitHub Pages (`https://<usuario>.github.io/<repo>/`), la app deduce el repositorio de la
-propia URL, así que el link no necesita parámetros. Fuera de Pages, o para apuntar a otro repositorio,
-se usa `?repo=usuario/repo`. Para volver a la pantalla de configuración inicial, añade `?setup=1`.
+propia URL, así que el link no necesita parámetros. Con dominio propio (fichero `CNAME`) el host ya no
+dice el repositorio, así que se toma de `<meta name="taller-repo" content="usuario/repo">` en
+`index.html`. Para apuntar a otro repositorio se usa `?repo=usuario/repo`, y para volver a la pantalla
+de configuración inicial, `?setup=1`.
 
 ## Sobre el PIN
 
